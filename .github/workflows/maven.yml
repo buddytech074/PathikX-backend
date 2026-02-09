@@ -1,5 +1,4 @@
 name: CI + Auto Deploy Spring Boot
-
 on:
   push:
     branches: ["staging"]
