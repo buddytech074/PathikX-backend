@@ -22,4 +22,6 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     @Query(value = "SELECT * FROM vehicles v WHERE v.is_available = true AND ST_Distance_Sphere(point(v.longitude, v.latitude), point(:lng, :lat)) <= :radius", nativeQuery = true)
     List<Vehicle> findNearbyVehicles(@Param("lat") double lat, @Param("lng") double lng,
             @Param("radius") double radius);
+
+    List<Vehicle> findByIsAvailableTrue();
 }

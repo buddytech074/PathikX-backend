@@ -2,6 +2,9 @@ package com.vehiclebooking.backend.controller;
 
 import com.vehiclebooking.backend.dto.ApiResponse;
 import com.vehiclebooking.backend.dto.AuthRequest;
+import com.vehiclebooking.backend.dto.DriverRegistrationRequest;
+import com.vehiclebooking.backend.dto.GoogleLoginRequest;
+import com.vehiclebooking.backend.dto.SaveOtpRequest;
 import com.vehiclebooking.backend.dto.VerifyOtpRequest;
 import com.vehiclebooking.backend.model.User;
 import com.vehiclebooking.backend.service.AuthService;
@@ -39,5 +42,43 @@ public class AuthController {
     public ResponseEntity<ApiResponse<User>> register(@RequestBody AuthRequest request) {
         User user = authService.register(request);
         return ResponseEntity.ok(ApiResponse.success(user, "Registration Successful"));
+    }
+
+    @PostMapping("/save-firebase-otp")
+    public ResponseEntity<ApiResponse<String>> saveFirebaseOtp(@RequestBody SaveOtpRequest request) {
+        String result = authService.saveFirebaseOtp(request);
+        return ResponseEntity.ok(ApiResponse.success(result, "OTP Saved"));
+    }
+
+    @PostMapping("/google-login")
+    public ResponseEntity<ApiResponse<User>> googleLogin(@RequestBody GoogleLoginRequest request) {
+        User user = authService.googleLogin(request.getIdToken());
+        return ResponseEntity.ok(ApiResponse.success(user, "Google Login Successful"));
+    }
+
+    @PutMapping("/update-phone")
+    public ResponseEntity<ApiResponse<User>> updatePhoneNumber(
+            @RequestParam Long userId,
+            @RequestParam String phoneNumber) {
+        User user = authService.updatePhoneNumber(userId, phoneNumber);
+        return ResponseEntity.ok(ApiResponse.success(user, "Phone number updated successfully"));
+    }
+
+    @PostMapping("/register-driver")
+    public ResponseEntity<ApiResponse<User>> registerDriver(@RequestBody DriverRegistrationRequest request) {
+        User driver = authService.registerDriver(request);
+        return ResponseEntity.ok(ApiResponse.success(driver, "Driver registered successfully"));
+    }
+
+    @PostMapping("/upgrade-to-driver")
+    public ResponseEntity<ApiResponse<User>> upgradeToDriver(@RequestBody DriverRegistrationRequest request) {
+        User driver = authService.upgradeToDriver(request);
+        return ResponseEntity.ok(ApiResponse.success(driver, "User upgraded to driver successfully"));
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<ApiResponse<User>> getProfile(@RequestParam Long userId) {
+        User user = authService.getUserById(userId);
+        return ResponseEntity.ok(ApiResponse.success(user, "Profile retrieved successfully"));
     }
 }

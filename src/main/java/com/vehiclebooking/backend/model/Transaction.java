@@ -22,7 +22,7 @@ public class Transaction {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "booking_id", nullable = false)
+    @JoinColumn(name = "booking_id", nullable = true) // Optional for wallet top-ups
     private Booking booking;
 
     @ManyToOne
@@ -32,6 +32,8 @@ public class Transaction {
     private BigDecimal amount;
 
     private String type; // PLATFORM or DRIVER
+    private String transactionCategory; // CREDIT or DEBIT
+    private String description;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;

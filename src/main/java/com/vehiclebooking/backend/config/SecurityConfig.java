@@ -28,6 +28,10 @@ public class SecurityConfig {
                         .requestMatchers("/vehicles/**").permitAll()
                         .requestMatchers("/booking/**").permitAll()
                         .requestMatchers("/driver/**").permitAll()
+                        .requestMatchers("/api/pricing-config/**").permitAll() // Pricing config API
+                        .requestMatchers("/ws/**").permitAll() // WebSocket endpoint
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**")
+                        .permitAll()
                         .anyRequest().permitAll());
 
         return http.build();
@@ -41,9 +45,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedOriginPatterns(List.of("*")); // Use patterns instead of origins
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true); // Important for WebSocket
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

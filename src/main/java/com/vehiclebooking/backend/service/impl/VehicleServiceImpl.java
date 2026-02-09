@@ -141,4 +141,27 @@ public class VehicleServiceImpl implements VehicleService {
         vehicle.setAssignedDriver(null);
         return vehicleRepository.save(vehicle);
     }
+
+    @Override
+    public List<com.vehiclebooking.backend.dto.ActiveDriverDto> getActiveDrivers() {
+        List<Vehicle> activeVehicles = vehicleRepository.findByIsAvailableTrue();
+
+        return activeVehicles.stream()
+                .filter(v -> v.getAssignedDriver() != null) // Only vehicles with assigned drivers
+                .map(v -> {
+                    return com.vehiclebooking.backend.dto.ActiveDriverDto.builder()
+                            .vehicleId(v.getId())
+                            .driverId(v.getAssignedDriver().getId())
+                            .driverName(v.getAssignedDriver().getFullName())
+                            .driverPhone(v.getAssignedDriver().getPhoneNumber())
+                            .vehicleType(v.getType())
+                            .vehicleModel(v.getModel())
+                            .numberPlate(v.getNumberPlate())
+                            .latitude(v.getLatitude())
+                            .longitude(v.getLongitude())
+                            .isAvailable(v.isAvailable())
+                            .build();
+                })
+                .toList();
+    }
 }

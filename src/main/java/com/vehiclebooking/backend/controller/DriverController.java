@@ -27,14 +27,6 @@ public class DriverController {
 
     private final VehicleService vehicleService;
 
-    @PostMapping("/update-location")
-    public ResponseEntity<ApiResponse<String>> updateLocation(@RequestParam Long driverId, @RequestParam double lat,
-            @RequestParam double lng) {
-        // Implement location update logic here
-        // For now, returning success
-        return ResponseEntity.ok(ApiResponse.success("Location updated", "Success"));
-    }
-
     @GetMapping("/my-vehicles")
     public ResponseEntity<ApiResponse<List<Vehicle>>> getMyVehicles(@RequestParam Long driverId) {
         List<Vehicle> vehicles = vehicleService.getMyVehicles(driverId);

@@ -24,4 +24,6 @@ public interface VehicleService {
     Vehicle assignDriver(Long vehicleId, Long ownerId, String driverPhoneNumber);
 
     Vehicle unassignDriver(Long vehicleId, Long ownerId);
+
+    List<com.vehiclebooking.backend.dto.ActiveDriverDto> getActiveDrivers();
 }
