@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vehicle-booking
+  labels:
+    name: vehicle-booking
+    environment: production

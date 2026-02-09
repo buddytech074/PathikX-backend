@@ -23,6 +23,8 @@ public class DriverLocation {
 
     private LocalDateTime updatedAt;
 
+    private Double heading; // Direction in degrees (0-360)
+
     @PrePersist
     @PreUpdate
     protected void onUpdate() {

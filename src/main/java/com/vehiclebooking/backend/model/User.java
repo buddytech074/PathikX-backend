@@ -26,7 +26,7 @@ public class User implements UserDetails {
 
     private String fullName;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = true) // Allow null for Google login users
     private String phoneNumber;
 
     private String email;
@@ -40,9 +40,14 @@ public class User implements UserDetails {
     private String profileImageUrl;
 
     // For drivers
-    private String documentUrl; // Treating this as License Image
+    private String documentUrl; // Treating this as License Front Image
+    private String licenseBackUrl; // License Back Image
     private String licenseNumber;
     private boolean isVerified;
+
+    @Builder.Default
+    @Column(precision = 10, scale = 2)
+    private java.math.BigDecimal walletBalance = java.math.BigDecimal.ZERO;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -51,7 +56,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return phoneNumber;
+        return phoneNumber != null ? phoneNumber : email;
     }
 
     @Override

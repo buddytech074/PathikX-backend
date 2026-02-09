@@ -75,4 +75,10 @@ public class VehicleController {
         Vehicle vehicle = vehicleService.unassignDriver(id, ownerId);
         return ResponseEntity.ok(ApiResponse.success(vehicle, "Driver unassigned successfully"));
     }
+
+    @GetMapping("/active-drivers")
+    public ResponseEntity<ApiResponse<List<com.vehiclebooking.backend.dto.ActiveDriverDto>>> getActiveDrivers() {
+        List<com.vehiclebooking.backend.dto.ActiveDriverDto> activeDrivers = vehicleService.getActiveDrivers();
+        return ResponseEntity.ok(ApiResponse.success(activeDrivers, "Active drivers fetched successfully"));
+    }
 }

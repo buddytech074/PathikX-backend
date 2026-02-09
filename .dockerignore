@@ -1,0 +1,15 @@
+# Docker ignore file to reduce build context
+.git
+.gitignore
+README.md
+target/
+!target/*.jar
+.mvn
+.vscode
+.idea
+*.iml
+.settings
+.classpath
+.project
+logs/
+*.log

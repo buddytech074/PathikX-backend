@@ -1,0 +1,161 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: vehicle-booking
+  labels:
+    app: backend
+spec:
+  replicas: 2 # Scale as needed
+  selector:
+    matchLabels:
+      app: backend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: your-registry/vehicle-booking-backend:latest # Update with your registry
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          env:
+            # Database Configuration
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql:3306/$(MYSQL_DATABASE)?createDatabaseIfNotExist=true&useSSL=false"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: MYSQL_USER
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: MYSQL_PASSWORD
+
+            # Configuration from ConfigMap
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: MYSQL_DATABASE
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: SPRING_JPA_HIBERNATE_DDL_AUTO
+            - name: SPRING_JPA_SHOW_SQL
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: SPRING_JPA_SHOW_SQL
+            - name: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
+            - name: SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: SERVER_PORT
+            - name: LOGGING_LEVEL_ROOT
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: LOGGING_LEVEL_ROOT
+            - name: LOGGING_LEVEL_COM_VEHICLEBOOKING
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: LOGGING_LEVEL_COM_VEHICLEBOOKING
+
+            # JWT Configuration
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: JWT_SECRET
+            - name: JWT_EXPIRATION
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: JWT_EXPIRATION
+
+            # CORS Configuration
+            - name: CORS_ALLOWED_ORIGINS
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: CORS_ALLOWED_ORIGINS
+
+            # Firebase Credentials
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/app/config/firebase-credentials.json"
+
+          volumeMounts:
+            - name: firebase-secret
+              mountPath: /app/config
+              readOnly: true
+
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 90
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+      volumes:
+        - name: firebase-secret
+          secret:
+            secretName: firebase-credentials
+
+      # Add image pull secrets if using private registry
+      # imagePullSecrets:
+      # - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: vehicle-booking
+  labels:
+    app: backend
+spec:
+  type: LoadBalancer # Use LoadBalancer for cloud or NodePort for local
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app: backend
