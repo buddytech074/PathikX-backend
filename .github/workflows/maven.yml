@@ -37,6 +37,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: "target/*.jar"
           target: "${{ secrets.APP_PATH }}"
+          strip_components: 1
 
       # Restart service
       - name: Restart Spring Boot Service
