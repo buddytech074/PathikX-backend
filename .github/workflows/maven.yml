@@ -16,17 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Diagnostic step to verify secrets exist
-      - name: Verify Deployment Secrets
-        run: |
-          if [ -z "${{ secrets.SERVER_HOST }}" ]; then echo "❌ SERVER_HOST is missing"; fi
-          if [ -z "${{ secrets.SERVER_USER }}" ]; then echo "❌ SERVER_USER is missing"; fi
-          if [ -z "${{ secrets.SERVER_SSH_KEY }}" ]; then echo "❌ SERVER_SSH_KEY is missing"; fi
-          if [ -z "${{ secrets.APP_PATH }}" ]; then echo "❌ APP_PATH is missing"; fi
-          if [ -n "${{ secrets.SERVER_HOST }}" ] && [ -n "${{ secrets.SERVER_USER }}" ] && [ -n "${{ secrets.SERVER_SSH_KEY }}" ]; then
-            echo "✅ All required deployment secrets are detected."
-          fi
-
       # Setup Java
       - name: Set up JDK 17
         uses: actions/setup-java@v4
